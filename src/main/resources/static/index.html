@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Генератор и Валидатор Паролей</title>
+    <style>
+        :root {
+            --bg-gradient-start: #667eea;
+            --bg-gradient-end: #764ba2;
+            --card-bg: white;
+            --text-primary: #333;
+            --text-secondary: #666;
+            --text-light: white;
+            --border-color: #e0e0e0;
+            --input-bg: white;
+            --result-bg: #f8f9fa;
+            --primary-color: #667eea;
+            --shadow: rgba(0,0,0,0.3);
+        }
+
+        [data-theme="dark"] {
+            --bg-gradient-start: #1a1a2e;
+            --bg-gradient-end: #16213e;
+            --card-bg: #0f3460;
+            --text-primary: #e0e0e0;
+            --text-secondary: #b0b0b0;
+            --text-light: white;
+            --border-color: #1a1a2e;
+            --input-bg: #1a1a2e;
+            --result-bg: #16213e;
+            --primary-color: #667eea;
+            --shadow: rgba(0,0,0,0.5);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%);
+            min-height: 100vh;
+            padding: 20px;
+            transition: background 0.3s ease;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            color: var(--text-light);
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px var(--shadow);
+        }
+
+        .theme-toggle {
+            background: var(--card-bg);
+            border: none;
+            padding: 12px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 24px;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 4px 10px var(--shadow);
+        }
+
+        .theme-toggle:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px var(--shadow);
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px var(--shadow);
+            transition: background 0.3s ease;
+        }
+
+        h2 {
+            color: var(--primary-color);
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        input[type="number"],
+        input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+            background: var(--input-bg);
+            color: var(--text-primary);
+        }
+
+        input[type="number"]:focus,
+        input[type="text"]:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        .checkbox-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+        }
+
+        .checkbox-item label {
+            margin-bottom: 0;
+            color: var(--text-primary);
+        }
+
+        input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            margin-right: 8px;
+            cursor: pointer;
+        }
+
+        button {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .result {
+            margin-top: 20px;
+            padding: 20px;
+            background: var(--result-bg);
+            border-radius: 8px;
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .password-display {
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--text-primary);
+            word-break: break-all;
+            margin: 10px 0;
+            font-family: 'Courier New', monospace;
+        }
+
+        .strength-meter {
+            height: 30px;
+            background: var(--border-color);
+            border-radius: 15px;
+            overflow: hidden;
+            margin: 15px 0;
+        }
+
+        .strength-bar {
+            height: 100%;
+            transition: width 0.5s, background-color 0.5s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        .strength-very-weak { background: #f44336; }
+        .strength-weak { background: #ff9800; }
+        .strength-medium { background: #ffc107; }
+        .strength-strong { background: #8bc34a; }
+        .strength-very-strong { background: #4caf50; }
+
+        .feedback-section {
+            margin-top: 20px;
+        }
+
+        .feedback-section h3 {
+            color: var(--text-primary);
+            margin-bottom: 10px;
+        }
+
+        .feedback-item {
+            padding: 10px;
+            margin: 5px 0;
+            background: var(--card-bg);
+            border-radius: 5px;
+            border-left: 3px solid var(--primary-color);
+            color: var(--text-primary);
+        }
+
+        .score-display {
+            font-size: 48px;
+            font-weight: bold;
+            text-align: center;
+            color: var(--primary-color);
+            margin: 20px 0;
+        }
+
+        .crack-time-display {
+            text-align: center;
+            padding: 20px;
+            margin: 20px 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 12px;
+            box-shadow: 0 5px 15px var(--shadow);
+        }
+
+        .crack-time-label {
+            color: rgba(255,255,255,0.9);
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+
+        .crack-time-value {
+            color: white;
+            font-size: 32px;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .crack-time-icon {
+            font-size: 48px;
+            margin-bottom: 10px;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .copy-btn {
+            margin-top: 10px;
+            width: auto;
+            padding: 10px 20px;
+            background: #4caf50;
+        }
+
+        .copy-btn:hover {
+            background: #45a049;
+        }
+
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 1.8em;
+            }
+            
+            .header {
+                flex-direction: column;
+                gap: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔐 Генератор и Валидатор Паролей</h1>
+            <button class="theme-toggle" onclick="toggleTheme()" title="Сменить тему">
+                <span id="themeIcon">🌙</span>
+            </button>
+        </div>
+
+        <!-- Генератор паролей -->
+        <div class="card">
+            <h2>Генератор Паролей</h2>
+            <div class="form-group">
+                <label for="length">Длина пароля:</label>
+                <input type="number" id="length" min="4" max="128" value="16">
+            </div>
+            <div class="form-group">
+                <label>Типы символов:</label>
+                <div class="checkbox-group">
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="lowercase" checked>
+                        <label for="lowercase">Строчные (a-z)</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="uppercase" checked>
+                        <label for="uppercase">Заглавные (A-Z)</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="digits" checked>
+                        <label for="digits">Цифры (0-9)</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="special" checked>
+                        <label for="special">Спецсимволы (!@#$)</label>
+                    </div>
+                </div>
+            </div>
+            <button onclick="generatePassword()">Сгенерировать Пароль</button>
+            
+            <div id="generatedResult" class="result hidden">
+                <div class="password-display" id="generatedPassword"></div>
+                <button class="copy-btn" onclick="copyPassword()">Копировать</button>
+            </div>
+        </div>
+
+        <!-- Валидатор паролей -->
+        <div class="card">
+            <h2>Валидатор Паролей</h2>
+            <div class="form-group">
+                <label for="passwordInput">Введите пароль для проверки:</label>
+                <input type="text" id="passwordInput" placeholder="Введите пароль...">
+            </div>
+            <button onclick="validatePassword()">Проверить Пароль</button>
+            
+            <div id="validationResult" class="result hidden">
+                <div class="score-display" id="scoreDisplay"></div>
+                <div class="strength-meter">
+                    <div class="strength-bar" id="strengthBar"></div>
+                </div>
+
+                <div class="crack-time-display">
+                    <div class="crack-time-icon">⏱️</div>
+                    <div class="crack-time-label">Время взлома</div>
+                    <div class="crack-time-value" id="crackTimeValue"></div>
+                </div>
+                
+                <div class="feedback-section">
+                    <h3>Детали проверки:</h3>
+                    <div id="feedbackDetails"></div>
+                </div>
+                
+                <div class="feedback-section">
+                    <h3>Рекомендации:</h3>
+                    <div id="recommendations"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Инициализация темы
+        function initTheme() {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            updateThemeIcon(savedTheme);
+        }
+
+        function toggleTheme() {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            updateThemeIcon(newTheme);
+        }
+
+        function updateThemeIcon(theme) {
+            const icon = document.getElementById('themeIcon');
+            icon.textContent = theme === 'light' ? '🌙' : '☀️';
+        }
+
+        async function generatePassword() {
+            const length = document.getElementById('length').value;
+            const includeLowercase = document.getElementById('lowercase').checked;
+            const includeUppercase = document.getElementById('uppercase').checked;
+            const includeDigits = document.getElementById('digits').checked;
+            const includeSpecial = document.getElementById('special').checked;
+
+            const requestBody = {
+                length: parseInt(length),
+                includeLowercase,
+                includeUppercase,
+                includeDigits,
+                includeSpecial
+            };
+
+            try {
+                const response = await fetch('/api/password/generate', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(requestBody)
+                });
+
+                const data = await response.json();
+                document.getElementById('generatedPassword').textContent = data.password;
+                document.getElementById('generatedResult').classList.remove('hidden');
+            } catch (error) {
+                alert('Ошибка при генерации пароля: ' + error.message);
+            }
+        }
+
+        async function validatePassword() {
+            const password = document.getElementById('passwordInput').value;
+
+            if (!password) {
+                alert('Пожалуйста, введите пароль для проверки');
+                return;
+            }
+
+            const requestBody = {
+                password: password
+            };
+
+            try {
+                const response = await fetch('/api/password/validate', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(requestBody)
+                });
+
+                const data = await response.json();
+                displayValidationResult(data);
+            } catch (error) {
+                alert('Ошибка при проверке пароля: ' + error.message);
+            }
+        }
+
+        function displayValidationResult(data) {
+            // Отображение оценки
+            document.getElementById('scoreDisplay').textContent = data.score + ' / 100';
+            
+            // Отображение времени взлома
+            document.getElementById('crackTimeValue').textContent = data.crackTime;
+            
+            // Отображение полосы надежности
+            const strengthBar = document.getElementById('strengthBar');
+            strengthBar.style.width = data.score + '%';
+            strengthBar.textContent = data.strength;
+            
+            // Установка цвета в зависимости от надежности
+            strengthBar.className = 'strength-bar';
+            if (data.score <= 25) {
+                strengthBar.classList.add('strength-very-weak');
+            } else if (data.score <= 50) {
+                strengthBar.classList.add('strength-weak');
+            } else if (data.score <= 75) {
+                strengthBar.classList.add('strength-medium');
+            } else if (data.score <= 90) {
+                strengthBar.classList.add('strength-strong');
+            } else {
+                strengthBar.classList.add('strength-very-strong');
+            }
+
+            // Отображение деталей
+            const feedback = data.feedback;
+            const detailsHtml = `
+                <div class="feedback-item">
+                    <strong>Последовательные символы:</strong> ${feedback.hasSequentialChars ? '❌ Обнаружены' : '✅ Не обнаружены'}
+                </div>
+                <div class="feedback-item">
+                    <strong>Повторяющиеся символы:</strong> ${feedback.hasRepeatedChars ? '❌ Обнаружены' : '✅ Не обнаружены'}
+                </div>
+                <div class="feedback-item">
+                    <strong>Общие паттерны:</strong> ${feedback.matchesCommonPattern ? '❌ Обнаружены' : '✅ Не обнаружены'}
+                </div>
+                <div class="feedback-item">
+                    <strong>Баллы за длину:</strong> ${feedback.lengthScore} / 30
+                </div>
+                <div class="feedback-item">
+                    <strong>Баллы за разнообразие:</strong> ${feedback.diversityScore} / 30
+                </div>
+            `;
+            document.getElementById('feedbackDetails').innerHTML = detailsHtml;
+
+            // Отображение рекомендаций
+            const recommendationsHtml = feedback.recommendations
+                .map(rec => `<div class="feedback-item">💡 ${rec}</div>`)
+                .join('');
+            document.getElementById('recommendations').innerHTML = recommendationsHtml;
+
+            document.getElementById('validationResult').classList.remove('hidden');
+        }
+
+        function copyPassword() {
+            const password = document.getElementById('generatedPassword').textContent;
+            navigator.clipboard.writeText(password).then(() => {
+                alert('Пароль скопирован в буфер обмена!');
+            });
+        }
+
+        // Инициализация темы при загрузке страницы
+        initTheme();
+    </script>
+</body>
+</html>
