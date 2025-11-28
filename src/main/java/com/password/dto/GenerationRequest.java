@@ -26,6 +26,14 @@ public class GenerationRequest {
     @NotNull(message = "Параметр includeSpecial обязателен")
     private Boolean includeSpecial;
 
+    private Boolean excludeSimilar;
+    private Boolean includeCyrillic;
+    private String excludeCharacters;
+    private Integer minLowercase;
+    private Integer minUppercase;
+    private Integer minDigits;
+    private Integer minSpecial;
+
     public GenerationRequest() {
     }
 
@@ -77,4 +85,61 @@ public class GenerationRequest {
     public void setIncludeSpecial(Boolean includeSpecial) {
         this.includeSpecial = includeSpecial;
     }
+
+    public Boolean getExcludeSimilar() {
+        return excludeSimilar;
+    }
+
+    public void setExcludeSimilar(Boolean excludeSimilar) {
+        this.excludeSimilar = excludeSimilar;
+    }
+
+    public Boolean getIncludeCyrillic() {
+        return includeCyrillic;
+    }
+
+    public void setIncludeCyrillic(Boolean includeCyrillic) {
+        this.includeCyrillic = includeCyrillic;
+    }
+
+    public String getExcludeCharacters() {
+        return excludeCharacters;
+    }
+
+    public void setExcludeCharacters(String excludeCharacters) {
+        this.excludeCharacters = excludeCharacters;
+    }
+
+    public Integer getMinLowercase() {
+        return minLowercase;
+    }
+
+    public void setMinLowercase(Integer minLowercase) {
+        this.minLowercase = minLowercase;
+    }
+
+    public Integer getMinUppercase() {
+        return minUppercase;
+    }
+
+    public void setMinUppercase(Integer minUppercase) {
+        this.minUppercase = minUppercase;
+    }
+
+    public Integer getMinDigits() {
+        return minDigits;
+    }
+
+    public void setMinDigits(Integer minDigits) {
+        this.minDigits = minDigits;
+    }
+
+    public Integer getMinSpecial() {
+        return minSpecial;
+    }
+
+    public void setMinSpecial(Integer minSpecial) {
+        this.minSpecial = minSpecial;
+    }
 }
+

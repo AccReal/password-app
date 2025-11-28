@@ -3,34 +3,34 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Генератор и Валидатор Паролей</title>
+    <title>Password Generator & Validator Pro</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+        
         :root {
-            --bg-gradient-start: #667eea;
-            --bg-gradient-end: #764ba2;
-            --card-bg: white;
-            --text-primary: #333;
-            --text-secondary: #666;
-            --text-light: white;
-            --border-color: #e0e0e0;
-            --input-bg: white;
-            --result-bg: #f8f9fa;
-            --primary-color: #667eea;
-            --shadow: rgba(0,0,0,0.3);
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #8b5cf6;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --dark: #0f172a;
+            --light: #f8fafc;
+            --glass-bg: rgba(255, 255, 255, 0.1);
+            --glass-border: rgba(255, 255, 255, 0.2);
+            --shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
         }
 
         [data-theme="dark"] {
-            --bg-gradient-start: #1a1a2e;
-            --bg-gradient-end: #16213e;
-            --card-bg: #0f3460;
-            --text-primary: #e0e0e0;
-            --text-secondary: #b0b0b0;
-            --text-light: white;
-            --border-color: #1a1a2e;
-            --input-bg: #1a1a2e;
-            --result-bg: #16213e;
-            --primary-color: #667eea;
-            --shadow: rgba(0,0,0,0.5);
+            --primary: #818cf8;
+            --primary-dark: #6366f1;
+            --text-primary: #f1f5f9;
+            --text-secondary: #cbd5e1;
+            --dark: #f8fafc;
+            --light: #0f172a;
         }
 
         * {
@@ -40,341 +40,855 @@
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
             min-height: 100vh;
             padding: 20px;
-            transition: background 0.3s ease;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg"><defs><pattern id="grid" width="100" height="100" patternUnits="userSpaceOnUse"><path d="M 100 0 L 0 0 0 100" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="1"/></pattern></defs><rect width="100%" height="100%" fill="url(%23grid)"/></svg>');
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        [data-theme="dark"] body {
+            background: linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #4c1d95 100%);
         }
 
         .container {
-            max-width: 800px;
+            max-width: 1400px;
             margin: 0 auto;
+            position: relative;
+            z-index: 1;
         }
 
         .header {
-            display: flex;
-            justify-content: space-between;
+            text-align: center;
+            margin-bottom: 40px;
+            animation: fadeInDown 0.6s ease-out;
+        }
+
+        .logo {
+            display: inline-flex;
             align-items: center;
-            margin-bottom: 30px;
+            gap: 15px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            padding: 20px 40px;
+            border-radius: 20px;
+            border: 1px solid var(--glass-border);
+            box-shadow: var(--shadow);
+            margin-bottom: 20px;
+        }
+
+        .logo i {
+            font-size: 48px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
 
         h1 {
-            color: var(--text-light);
             font-size: 2.5em;
-            text-shadow: 2px 2px 4px var(--shadow);
+            font-weight: 800;
+            color: white;
+            text-shadow: 0 2px 20px rgba(0,0,0,0.3);
+            margin: 0;
         }
 
-        .theme-toggle {
-            background: var(--card-bg);
-            border: none;
-            padding: 12px 20px;
-            border-radius: 25px;
+        .subtitle {
+            color: rgba(255,255,255,0.9);
+            font-size: 1.1em;
+            margin-top: 10px;
+            font-weight: 400;
+        }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .control-btn {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 12px;
             cursor: pointer;
-            font-size: 24px;
-            transition: transform 0.2s, box-shadow 0.2s;
-            box-shadow: 0 4px 10px var(--shadow);
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
-        .theme-toggle:hover {
+        .control-btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 6px 15px var(--shadow);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            background: rgba(255,255,255,0.2);
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            justify-content: center;
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        .tab {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            color: white;
+            padding: 15px 30px;
+            border-radius: 15px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .tab:hover {
+            transform: translateY(-2px);
+            background: rgba(255,255,255,0.15);
+        }
+
+        .tab.active {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.9) 0%, rgba(139, 92, 246, 0.9) 100%);
+            border-color: rgba(255,255,255,0.3);
+            box-shadow: 0 10px 40px rgba(99, 102, 241, 0.4);
+            transform: translateY(-2px);
+        }
+
+        .tab i {
+            font-size: 20px;
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeInUp 0.5s ease-out;
+        }
+
+        .tab-content.active {
+            display: block;
         }
 
         .card {
-            background: var(--card-bg);
-            border-radius: 15px;
-            padding: 30px;
-            margin-bottom: 20px;
-            box-shadow: 0 10px 30px var(--shadow);
-            transition: background 0.3s ease;
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 40px;
+            margin-bottom: 30px;
+            box-shadow: var(--shadow);
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 25px 70px rgba(0, 0, 0, 0.4);
         }
 
         h2 {
-            color: var(--primary-color);
-            margin-bottom: 20px;
-            font-size: 1.8em;
+            color: white;
+            font-size: 2em;
+            font-weight: 700;
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        h2 i {
+            font-size: 0.9em;
+            opacity: 0.9;
         }
 
         .form-group {
-            margin-bottom: 20px;
+            margin-bottom: 25px;
         }
 
         label {
             display: block;
-            margin-bottom: 8px;
-            color: var(--text-primary);
+            color: white;
             font-weight: 600;
+            margin-bottom: 10px;
+            font-size: 15px;
         }
 
         input[type="number"],
         input[type="text"] {
             width: 100%;
-            padding: 12px;
-            border: 2px solid var(--border-color);
-            border-radius: 8px;
+            padding: 15px 20px;
+            background: rgba(255,255,255,0.1);
+            border: 2px solid rgba(255,255,255,0.2);
+            border-radius: 12px;
+            color: white;
             font-size: 16px;
-            transition: border-color 0.3s;
-            background: var(--input-bg);
-            color: var(--text-primary);
+            font-weight: 500;
+            transition: all 0.3s ease;
         }
 
         input[type="number"]:focus,
         input[type="text"]:focus {
             outline: none;
-            border-color: var(--primary-color);
+            border-color: var(--primary);
+            background: rgba(255,255,255,0.15);
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
         }
 
-        .checkbox-group {
-            display: flex;
-            flex-wrap: wrap;
+        input::placeholder {
+            color: rgba(255,255,255,0.5);
+        }
+
+        .checkbox-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 15px;
-            margin-top: 10px;
+            margin-top: 15px;
         }
 
         .checkbox-item {
-            display: flex;
-            align-items: center;
+            background: rgba(255,255,255,0.05);
+            padding: 15px;
+            border-radius: 12px;
+            border: 2px solid rgba(255,255,255,0.1);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .checkbox-item:hover {
+            background: rgba(255,255,255,0.1);
+            border-color: rgba(255,255,255,0.3);
+        }
+
+        .checkbox-item input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            margin-right: 10px;
+            cursor: pointer;
+            accent-color: var(--primary);
         }
 
         .checkbox-item label {
-            margin-bottom: 0;
-            color: var(--text-primary);
-        }
-
-        input[type="checkbox"] {
-            width: 20px;
-            height: 20px;
-            margin-right: 8px;
+            margin: 0;
             cursor: pointer;
+            display: inline;
         }
 
-        button {
+        .btn {
             width: 100%;
-            padding: 15px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 18px;
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
             color: white;
             border: none;
-            border-radius: 8px;
+            border-radius: 15px;
             font-size: 18px;
-            font-weight: 600;
+            font-weight: 700;
             cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.2s;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 10px 30px rgba(99, 102, 241, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
         }
 
-        button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(99, 102, 241, 0.5);
         }
 
-        button:active {
-            transform: translateY(0);
+        .btn:active {
+            transform: translateY(-1px);
+        }
+
+        .btn i {
+            font-size: 20px;
         }
 
         .result {
-            margin-top: 20px;
-            padding: 20px;
-            background: var(--result-bg);
-            border-radius: 8px;
-            border-left: 4px solid var(--primary-color);
+            margin-top: 30px;
+            padding: 30px;
+            background: rgba(255,255,255,0.08);
+            border-radius: 20px;
+            border: 2px solid rgba(255,255,255,0.15);
+            animation: slideIn 0.4s ease-out;
         }
 
         .password-display {
+            background: rgba(0,0,0,0.3);
+            padding: 20px;
+            border-radius: 12px;
+            font-family: 'Courier New', monospace;
             font-size: 24px;
             font-weight: bold;
-            color: var(--text-primary);
+            color: #fff;
             word-break: break-all;
-            margin: 10px 0;
-            font-family: 'Courier New', monospace;
+            margin: 15px 0;
+            border: 2px solid rgba(255,255,255,0.2);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            box-shadow: 0 10px 30px rgba(16, 185, 129, 0.4);
+            width: auto;
+            padding: 12px 24px;
+            margin-top: 15px;
+        }
+
+        .btn-secondary:hover {
+            box-shadow: 0 15px 40px rgba(16, 185, 129, 0.5);
+        }
+
+        .score-display {
+            font-size: 64px;
+            font-weight: 900;
+            text-align: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin: 30px 0;
+            text-shadow: 0 0 30px rgba(102, 126, 234, 0.5);
         }
 
         .strength-meter {
-            height: 30px;
-            background: var(--border-color);
-            border-radius: 15px;
+            height: 40px;
+            background: rgba(0,0,0,0.3);
+            border-radius: 20px;
             overflow: hidden;
-            margin: 15px 0;
+            margin: 20px 0;
+            border: 2px solid rgba(255,255,255,0.1);
         }
 
         .strength-bar {
             height: 100%;
-            transition: width 0.5s, background-color 0.5s;
+            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
-            font-weight: bold;
+            font-weight: 700;
+            font-size: 16px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
         }
 
-        .strength-very-weak { background: #f44336; }
-        .strength-weak { background: #ff9800; }
-        .strength-medium { background: #ffc107; }
-        .strength-strong { background: #8bc34a; }
-        .strength-very-strong { background: #4caf50; }
+        .strength-very-weak { background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); }
+        .strength-weak { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); }
+        .strength-medium { background: linear-gradient(135deg, #eab308 0%, #ca8a04 100%); }
+        .strength-strong { background: linear-gradient(135deg, #84cc16 0%, #65a30d 100%); }
+        .strength-very-strong { background: linear-gradient(135deg, #10b981 0%, #059669 100%); }
+
+        .info-box {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.2) 0%, rgba(139, 92, 246, 0.2) 100%);
+            padding: 25px;
+            border-radius: 16px;
+            margin: 25px 0;
+            border: 2px solid rgba(99, 102, 241, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .info-box i {
+            font-size: 40px;
+            color: white;
+        }
+
+        .info-box-content {
+            flex: 1;
+        }
+
+        .info-box-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 5px;
+        }
+
+        .info-box-text {
+            font-size: 14px;
+            color: rgba(255,255,255,0.8);
+            line-height: 1.5;
+        }
+
+        .breach-safe {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.2) 0%, rgba(5, 150, 105, 0.2) 100%);
+            border-color: rgba(16, 185, 129, 0.4);
+        }
+
+        .breach-danger {
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.2) 0%, rgba(220, 38, 38, 0.2) 100%);
+            border-color: rgba(239, 68, 68, 0.4);
+        }
 
         .feedback-section {
-            margin-top: 20px;
+            margin-top: 30px;
         }
 
         .feedback-section h3 {
-            color: var(--text-primary);
-            margin-bottom: 10px;
+            color: white;
+            font-size: 1.3em;
+            font-weight: 700;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
 
         .feedback-item {
-            padding: 10px;
-            margin: 5px 0;
-            background: var(--card-bg);
-            border-radius: 5px;
-            border-left: 3px solid var(--primary-color);
-            color: var(--text-primary);
-        }
-
-        .score-display {
-            font-size: 48px;
-            font-weight: bold;
-            text-align: center;
-            color: var(--primary-color);
-            margin: 20px 0;
-        }
-
-        .crack-time-display {
-            text-align: center;
-            padding: 20px;
-            margin: 20px 0;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: rgba(255,255,255,0.05);
+            padding: 15px 20px;
+            margin: 10px 0;
             border-radius: 12px;
-            box-shadow: 0 5px 15px var(--shadow);
+            border-left: 4px solid var(--primary);
+            color: white;
+            font-size: 15px;
+            transition: all 0.3s ease;
         }
 
-        .crack-time-label {
-            color: rgba(255,255,255,0.9);
+        .feedback-item:hover {
+            background: rgba(255,255,255,0.1);
+            transform: translateX(5px);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.3) 0%, rgba(139, 92, 246, 0.3) 100%);
+            padding: 30px;
+            border-radius: 20px;
+            text-align: center;
+            border: 2px solid rgba(255,255,255,0.2);
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(99, 102, 241, 0.4);
+        }
+
+        .stat-value {
+            font-size: 48px;
+            font-weight: 900;
+            color: white;
+            margin: 15px 0;
+        }
+
+        .stat-label {
             font-size: 14px;
+            color: rgba(255,255,255,0.8);
+            font-weight: 600;
             text-transform: uppercase;
             letter-spacing: 1px;
-            margin-bottom: 8px;
         }
 
-        .crack-time-value {
+        .compare-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin: 30px 0;
+        }
+
+        .compare-item {
+            background: rgba(255,255,255,0.05);
+            padding: 25px;
+            border-radius: 16px;
+            border: 2px solid rgba(255,255,255,0.1);
+        }
+
+        .compare-item h3 {
             color: white;
-            font-size: 32px;
-            font-weight: bold;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            font-size: 1.3em;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
 
-        .crack-time-icon {
-            font-size: 48px;
-            margin-bottom: 10px;
+        .winner-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 8px 16px;
+            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+            color: white;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 700;
+            box-shadow: 0 4px 15px rgba(251, 191, 36, 0.4);
         }
 
         .hidden {
-            display: none;
+            display: none !important;
         }
 
-        .copy-btn {
-            margin-top: 10px;
-            width: auto;
-            padding: 10px 20px;
-            background: #4caf50;
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
 
-        .copy-btn:hover {
-            background: #45a049;
-        }
-
-        @media (max-width: 600px) {
-            h1 {
-                font-size: 1.8em;
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
             }
-            
-            .header {
-                flex-direction: column;
-                gap: 15px;
+            to {
+                opacity: 1;
+                transform: translateY(0);
             }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @media (max-width: 768px) {
+            h1 { font-size: 1.8em; }
+            .card { padding: 25px; }
+            .compare-grid { grid-template-columns: 1fr; }
+            .checkbox-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <h1>🔐 Генератор и Валидатор Паролей</h1>
-            <button class="theme-toggle" onclick="toggleTheme()" title="Сменить тему">
-                <span id="themeIcon">🌙</span>
+            <div class="logo">
+                <i class="fas fa-shield-halved"></i>
+                <h1 data-i18n="title">Password Generator & Validator Pro</h1>
+            </div>
+            <p class="subtitle" data-i18n="subtitle">Создавайте надежные пароли и проверяйте их безопасность</p>
+            <div class="controls">
+                <button class="control-btn" onclick="toggleLanguage()">
+                    <i class="fas fa-language"></i>
+                    <span id="langText">RU</span>
+                </button>
+                <button class="control-btn" onclick="toggleTheme()">
+                    <i class="fas fa-moon" id="themeIcon"></i>
+                    <span id="themeText" data-i18n="themeText">Темная тема</span>
+                </button>
+            </div>
+        </div>
+
+        <div class="tabs">
+            <button class="tab active" onclick="showTab('generator')">
+                <i class="fas fa-wand-magic-sparkles"></i>
+                <span data-i18n="generator">Генератор</span>
+            </button>
+            <button class="tab" onclick="showTab('batch')">
+                <i class="fas fa-layer-group"></i>
+                <span data-i18n="batch">Массовая генерация</span>
+            </button>
+            <button class="tab" onclick="showTab('validator')">
+                <i class="fas fa-shield-check"></i>
+                <span data-i18n="validator">Валидатор</span>
+            </button>
+            <button class="tab" onclick="showTab('compare')">
+                <i class="fas fa-code-compare"></i>
+                <span data-i18n="compare">Сравнение</span>
+            </button>
+            <button class="tab" onclick="showTab('statistics')">
+                <i class="fas fa-chart-line"></i>
+                <span data-i18n="statistics">Статистика</span>
             </button>
         </div>
 
-        <!-- Генератор паролей -->
-        <div class="card">
-            <h2>Генератор Паролей</h2>
-            <div class="form-group">
-                <label for="length">Длина пароля:</label>
-                <input type="number" id="length" min="4" max="128" value="16">
-            </div>
-            <div class="form-group">
-                <label>Типы символов:</label>
-                <div class="checkbox-group">
-                    <div class="checkbox-item">
-                        <input type="checkbox" id="lowercase" checked>
-                        <label for="lowercase">Строчные (a-z)</label>
-                    </div>
-                    <div class="checkbox-item">
-                        <input type="checkbox" id="uppercase" checked>
-                        <label for="uppercase">Заглавные (A-Z)</label>
-                    </div>
-                    <div class="checkbox-item">
-                        <input type="checkbox" id="digits" checked>
-                        <label for="digits">Цифры (0-9)</label>
-                    </div>
-                    <div class="checkbox-item">
-                        <input type="checkbox" id="special" checked>
-                        <label for="special">Спецсимволы (!@#$)</label>
+        <!-- Генератор -->
+        <div id="generator" class="tab-content active">
+            <div class="card">
+                <h2><i class="fas fa-wand-magic-sparkles"></i> <span data-i18n="generator">Генератор паролей</span></h2>
+                <div class="form-group">
+                    <label for="length"><i class="fas fa-ruler"></i> <span data-i18n="length">Длина пароля:</span></label>
+                    <input type="number" id="length" min="4" max="128" value="16">
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-sliders"></i> <span data-i18n="charTypes">Типы символов:</span></label>
+                    <div class="checkbox-grid">
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="lowercase" checked>
+                            <label for="lowercase" data-i18n="lowercase">Строчные (a-z)</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="uppercase" checked>
+                            <label for="uppercase" data-i18n="uppercase">Заглавные (A-Z)</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="digits" checked>
+                            <label for="digits" data-i18n="digits">Цифры (0-9)</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="special" checked>
+                            <label for="special" data-i18n="special">Спецсимволы (!@#$)</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="cyrillic">
+                            <label for="cyrillic" data-i18n="cyrillic">Кириллица (а-я)</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="excludeSimilar">
+                            <label for="excludeSimilar" data-i18n="excludeSimilar">Исключить похожие</label>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <button onclick="generatePassword()">Сгенерировать Пароль</button>
-            
-            <div id="generatedResult" class="result hidden">
-                <div class="password-display" id="generatedPassword"></div>
-                <button class="copy-btn" onclick="copyPassword()">Копировать</button>
+                <div class="form-group">
+                    <label for="excludeChars"><i class="fas fa-ban"></i> <span data-i18n="excludeChars">Исключить символы:</span></label>
+                    <input type="text" id="excludeChars" data-i18n-placeholder="example" placeholder="Например: @#$">
+                </div>
+                <button class="btn" onclick="generatePassword()">
+                    <i class="fas fa-sparkles"></i>
+                    <span data-i18n="generate">Сгенерировать пароль</span>
+                </button>
+                
+                <div id="generatedResult" class="result hidden">
+                    <div class="password-display" id="generatedPassword"></div>
+                    <button class="btn-secondary" onclick="copyPassword()">
+                        <i class="fas fa-copy"></i>
+                        <span data-i18n="copy">Копировать</span>
+                    </button>
+                </div>
             </div>
         </div>
 
-        <!-- Валидатор паролей -->
-        <div class="card">
-            <h2>Валидатор Паролей</h2>
-            <div class="form-group">
-                <label for="passwordInput">Введите пароль для проверки:</label>
-                <input type="text" id="passwordInput" placeholder="Введите пароль...">
+        <!-- Массовая генерация -->
+        <div id="batch" class="tab-content">
+            <div class="card">
+                <h2><i class="fas fa-layer-group"></i> <span data-i18n="batch">Массовая генерация</span></h2>
+                <div class="form-group">
+                    <label for="batchCount"><i class="fas fa-hashtag"></i> <span data-i18n="batchCount">Количество паролей:</span></label>
+                    <input type="number" id="batchCount" min="1" max="1000" value="10">
+                </div>
+                <div class="form-group">
+                    <label for="batchLength"><i class="fas fa-ruler"></i> <span data-i18n="length">Длина пароля:</span></label>
+                    <input type="number" id="batchLength" min="4" max="128" value="16">
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-sliders"></i> <span data-i18n="charTypes">Типы символов:</span></label>
+                    <div class="checkbox-grid">
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="batchLowercase" checked>
+                            <label for="batchLowercase" data-i18n="lowercase">Строчные (a-z)</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="batchUppercase" checked>
+                            <label for="batchUppercase" data-i18n="uppercase">Заглавные (A-Z)</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="batchDigits" checked>
+                            <label for="batchDigits" data-i18n="digits">Цифры (0-9)</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="batchSpecial" checked>
+                            <label for="batchSpecial" data-i18n="special">Спецсимволы (!@#$)</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="batchCyrillic">
+                            <label for="batchCyrillic" data-i18n="cyrillic">Кириллица (а-я)</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="batchExcludeSimilar">
+                            <label for="batchExcludeSimilar" data-i18n="excludeSimilar">Исключить похожие</label>
+                        </div>
+                    </div>
+                </div>
+                <button class="btn" onclick="generateBatch()">
+                    <i class="fas fa-rocket"></i>
+                    <span data-i18n="generateBatch">Сгенерировать пакет</span>
+                </button>
+                
+                <div id="batchResult" class="result hidden">
+                    <div style="display: flex; gap: 15px; margin-bottom: 20px; flex-wrap: wrap;">
+                        <button class="btn-secondary" onclick="downloadCSV()">
+                            <i class="fas fa-download"></i>
+                            <span data-i18n="downloadCsv">Скачать CSV</span>
+                        </button>
+                        <button class="btn-secondary" onclick="copyAllPasswords()">
+                            <i class="fas fa-copy"></i>
+                            <span data-i18n="copyAll">Копировать все</span>
+                        </button>
+                    </div>
+                    <div id="batchPasswordsList" style="max-height: 500px; overflow-y: auto;"></div>
+                </div>
             </div>
-            <button onclick="validatePassword()">Проверить Пароль</button>
-            
-            <div id="validationResult" class="result hidden">
-                <div class="score-display" id="scoreDisplay"></div>
-                <div class="strength-meter">
-                    <div class="strength-bar" id="strengthBar"></div>
-                </div>
+        </div>
 
-                <div class="crack-time-display">
-                    <div class="crack-time-icon">⏱️</div>
-                    <div class="crack-time-label">Время взлома</div>
-                    <div class="crack-time-value" id="crackTimeValue"></div>
+        <!-- Валидатор -->
+        <div id="validator" class="tab-content">
+            <div class="card">
+                <h2><i class="fas fa-shield-check"></i> <span data-i18n="validator">Валидатор паролей</span></h2>
+                <div class="form-group">
+                    <label for="passwordInput"><i class="fas fa-key"></i> <span data-i18n="enterPassword">Введите пароль:</span></label>
+                    <input type="text" id="passwordInput" placeholder="">
                 </div>
+                <button class="btn" onclick="validatePassword()">
+                    <i class="fas fa-magnifying-glass"></i>
+                    <span data-i18n="validate">Проверить пароль</span>
+                </button>
                 
-                <div class="feedback-section">
-                    <h3>Детали проверки:</h3>
-                    <div id="feedbackDetails"></div>
+                <div id="validationResult" class="result hidden">
+                    <div class="score-display" id="scoreDisplay"></div>
+                    <div class="strength-meter">
+                        <div class="strength-bar" id="strengthBar"></div>
+                    </div>
+
+                    <div class="info-box" id="crackTimeBox">
+                        <i class="fas fa-clock"></i>
+                        <div class="info-box-content">
+                            <div class="info-box-title" data-i18n="crackTime">Время взлома</div>
+                            <div class="info-box-text" id="crackTimeValue"></div>
+                        </div>
+                    </div>
+
+                    <div class="info-box" id="breachBox">
+                        <i class="fas fa-database" id="breachIcon"></i>
+                        <div class="info-box-content">
+                            <div class="info-box-title" data-i18n="breachCheck">Проверка утечек</div>
+                            <div class="info-box-text" id="breachStatus"></div>
+                            <div class="info-box-text" style="font-size: 12px; margin-top: 5px; opacity: 0.7;" data-i18n="breachNote">Проверка выполняется с использованием Have I Been Pwned API</div>
+                        </div>
+                    </div>
+                    
+                    <div class="feedback-section">
+                        <h3><i class="fas fa-list-check"></i> <span data-i18n="details">Детали проверки</span></h3>
+                        <div id="feedbackDetails"></div>
+                    </div>
+                    
+                    <div class="feedback-section">
+                        <h3><i class="fas fa-lightbulb"></i> <span data-i18n="recommendations">Рекомендации</span></h3>
+                        <div id="recommendations"></div>
+                    </div>
                 </div>
+            </div>
+        </div>
+
+        <!-- Сравнение -->
+        <div id="compare" class="tab-content">
+            <div class="card">
+                <h2><i class="fas fa-code-compare"></i> <span data-i18n="compare">Сравнение паролей</span></h2>
+                <div class="compare-grid">
+                    <div class="form-group">
+                        <label for="password1"><i class="fas fa-key"></i> <span data-i18n="enterPassword1">Первый пароль:</span></label>
+                        <input type="text" id="password1" placeholder="">
+                    </div>
+                    <div class="form-group">
+                        <label for="password2"><i class="fas fa-key"></i> <span data-i18n="enterPassword2">Второй пароль:</span></label>
+                        <input type="text" id="password2" placeholder="">
+                    </div>
+                </div>
+                <button class="btn" onclick="comparePasswords()">
+                    <i class="fas fa-scale-balanced"></i>
+                    <span data-i18n="compareBtn">Сравнить</span>
+                </button>
                 
-                <div class="feedback-section">
-                    <h3>Рекомендации:</h3>
-                    <div id="recommendations"></div>
+                <div id="compareResult" class="result hidden">
+                    <div class="compare-grid">
+                        <div class="compare-item">
+                            <h3>
+                                <i class="fas fa-key"></i> <span data-i18n="password1Label">Пароль 1</span>
+                                <span id="winner1" class="winner-badge hidden">
+                                    <i class="fas fa-trophy"></i> <span data-i18n="winnerLabel">Победитель</span>
+                                </span>
+                            </h3>
+                            <div class="score-display" id="score1" style="font-size: 48px;"></div>
+                            <div class="strength-meter">
+                                <div class="strength-bar" id="bar1"></div>
+                            </div>
+                        </div>
+                        <div class="compare-item">
+                            <h3>
+                                <i class="fas fa-key"></i> <span data-i18n="password2Label">Пароль 2</span>
+                                <span id="winner2" class="winner-badge hidden">
+                                    <i class="fas fa-trophy"></i> <span data-i18n="winnerLabel">Победитель</span>
+                                </span>
+                            </h3>
+                            <div class="score-display" id="score2" style="font-size: 48px;"></div>
+                            <div class="strength-meter">
+                                <div class="strength-bar" id="bar2"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="feedback-section">
+                        <h3><i class="fas fa-comment-dots"></i> <span data-i18n="recommendation">Рекомендация</span></h3>
+                        <div class="feedback-item" id="compareRecommendation"></div>
+                    </div>
                 </div>
+            </div>
+        </div>
+
+        <!-- Статистика -->
+        <div id="statistics" class="tab-content">
+            <div class="card">
+                <h2><i class="fas fa-chart-line"></i> <span data-i18n="statistics">Статистика использования</span></h2>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <i class="fas fa-wand-magic-sparkles" style="font-size: 40px; color: white; opacity: 0.8;"></i>
+                        <div class="stat-value" id="statGenerated">0</div>
+                        <div class="stat-label" data-i18n="generated">Сгенерировано</div>
+                    </div>
+                    <div class="stat-card">
+                        <i class="fas fa-shield-check" style="font-size: 40px; color: white; opacity: 0.8;"></i>
+                        <div class="stat-value" id="statValidated">0</div>
+                        <div class="stat-label" data-i18n="validated">Проверено</div>
+                    </div>
+                    <div class="stat-card">
+                        <i class="fas fa-star" style="font-size: 40px; color: white; opacity: 0.8;"></i>
+                        <div class="stat-value" id="statAvgScore">0</div>
+                        <div class="stat-label" data-i18n="avgScore">Средняя надежность</div>
+                    </div>
+                </div>
+                <button class="btn" onclick="loadStatistics()">
+                    <i class="fas fa-rotate"></i>
+                    <span data-i18n="refresh">Обновить</span>
+                </button>
             </div>
         </div>
     </div>
 
+    <script src="i18n.js"></script>
     <script>
-        // Инициализация темы
         function initTheme() {
             const savedTheme = localStorage.getItem('theme') || 'light';
             document.documentElement.setAttribute('data-theme', savedTheme);
@@ -391,30 +905,50 @@
 
         function updateThemeIcon(theme) {
             const icon = document.getElementById('themeIcon');
-            icon.textContent = theme === 'light' ? '🌙' : '☀️';
+            const text = document.getElementById('themeText');
+            if (theme === 'light') {
+                icon.className = 'fas fa-moon';
+                text.textContent = t('themeText');
+            } else {
+                icon.className = 'fas fa-sun';
+                text.textContent = t('lightTheme');
+            }
+        }
+
+        function toggleLanguage() {
+            const newLang = currentLang === 'ru' ? 'en' : 'ru';
+            setLanguage(newLang);
+            document.getElementById('langText').textContent = newLang.toUpperCase();
+        }
+
+        function showTab(tabName) {
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            
+            event.target.closest('.tab').classList.add('active');
+            document.getElementById(tabName).classList.add('active');
+
+            if (tabName === 'statistics') {
+                loadStatistics();
+            }
         }
 
         async function generatePassword() {
-            const length = document.getElementById('length').value;
-            const includeLowercase = document.getElementById('lowercase').checked;
-            const includeUppercase = document.getElementById('uppercase').checked;
-            const includeDigits = document.getElementById('digits').checked;
-            const includeSpecial = document.getElementById('special').checked;
-
             const requestBody = {
-                length: parseInt(length),
-                includeLowercase,
-                includeUppercase,
-                includeDigits,
-                includeSpecial
+                length: parseInt(document.getElementById('length').value),
+                includeLowercase: document.getElementById('lowercase').checked,
+                includeUppercase: document.getElementById('uppercase').checked,
+                includeDigits: document.getElementById('digits').checked,
+                includeSpecial: document.getElementById('special').checked,
+                includeCyrillic: document.getElementById('cyrillic').checked,
+                excludeSimilar: document.getElementById('excludeSimilar').checked,
+                excludeCharacters: document.getElementById('excludeChars').value
             };
 
             try {
                 const response = await fetch('/api/password/generate', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(requestBody)
                 });
 
@@ -422,103 +956,207 @@
                 document.getElementById('generatedPassword').textContent = data.password;
                 document.getElementById('generatedResult').classList.remove('hidden');
             } catch (error) {
-                alert('Ошибка при генерации пароля: ' + error.message);
+                alert('Ошибка: ' + error.message);
             }
+        }
+
+        async function generateBatch() {
+            const count = parseInt(document.getElementById('batchCount').value);
+            const requestBody = {
+                count: count,
+                length: parseInt(document.getElementById('batchLength').value),
+                includeLowercase: document.getElementById('batchLowercase').checked,
+                includeUppercase: document.getElementById('batchUppercase').checked,
+                includeDigits: document.getElementById('batchDigits').checked,
+                includeSpecial: document.getElementById('batchSpecial').checked,
+                includeCyrillic: document.getElementById('batchCyrillic').checked,
+                excludeSimilar: document.getElementById('batchExcludeSimilar').checked
+            };
+
+            try {
+                const response = await fetch('/api/password/generate/batch', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(requestBody)
+                });
+
+                const data = await response.json();
+                const passwordsList = document.getElementById('batchPasswordsList');
+                passwordsList.innerHTML = data.passwords
+                    .map((pwd, idx) => `<div class="feedback-item"><strong>${idx + 1}.</strong> ${pwd}</div>`)
+                    .join('');
+                
+                document.getElementById('batchResult').classList.remove('hidden');
+                window.batchPasswords = data.passwords;
+            } catch (error) {
+                alert('Ошибка: ' + error.message);
+            }
+        }
+
+        function downloadCSV() {
+            if (!window.batchPasswords) return;
+            
+            const csv = 'Password\n' + window.batchPasswords.join('\n');
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'passwords.csv';
+            a.click();
+            window.URL.revokeObjectURL(url);
+        }
+
+        function copyAllPasswords() {
+            if (!window.batchPasswords) return;
+            
+            const text = window.batchPasswords.join('\n');
+            navigator.clipboard.writeText(text).then(() => {
+                alert('Все пароли скопированы!');
+            });
         }
 
         async function validatePassword() {
             const password = document.getElementById('passwordInput').value;
-
             if (!password) {
-                alert('Пожалуйста, введите пароль для проверки');
+                alert('Введите пароль');
                 return;
             }
-
-            const requestBody = {
-                password: password
-            };
 
             try {
                 const response = await fetch('/api/password/validate', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(requestBody)
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ password, lang: currentLang })
                 });
 
                 const data = await response.json();
                 displayValidationResult(data);
             } catch (error) {
-                alert('Ошибка при проверке пароля: ' + error.message);
+                alert('Ошибка: ' + error.message);
             }
         }
 
         function displayValidationResult(data) {
-            // Отображение оценки
             document.getElementById('scoreDisplay').textContent = data.score + ' / 100';
-            
-            // Отображение времени взлома
             document.getElementById('crackTimeValue').textContent = data.crackTime;
             
-            // Отображение полосы надежности
             const strengthBar = document.getElementById('strengthBar');
             strengthBar.style.width = data.score + '%';
             strengthBar.textContent = data.strength;
             
-            // Установка цвета в зависимости от надежности
             strengthBar.className = 'strength-bar';
-            if (data.score <= 25) {
-                strengthBar.classList.add('strength-very-weak');
-            } else if (data.score <= 50) {
-                strengthBar.classList.add('strength-weak');
-            } else if (data.score <= 75) {
-                strengthBar.classList.add('strength-medium');
-            } else if (data.score <= 90) {
-                strengthBar.classList.add('strength-strong');
+            if (data.score <= 25) strengthBar.classList.add('strength-very-weak');
+            else if (data.score <= 50) strengthBar.classList.add('strength-weak');
+            else if (data.score <= 75) strengthBar.classList.add('strength-medium');
+            else if (data.score <= 90) strengthBar.classList.add('strength-strong');
+            else strengthBar.classList.add('strength-very-strong');
+
+            // Breach check display
+            const breachBox = document.getElementById('breachBox');
+            const breachIcon = document.getElementById('breachIcon');
+            const breachStatus = document.getElementById('breachStatus');
+            
+            if (data.isPwned) {
+                breachBox.className = 'info-box breach-danger';
+                breachIcon.className = 'fas fa-triangle-exclamation';
+                breachStatus.textContent = t('breachFound');
             } else {
-                strengthBar.classList.add('strength-very-strong');
+                breachBox.className = 'info-box breach-safe';
+                breachIcon.className = 'fas fa-shield-check';
+                breachStatus.textContent = t('breachNotFound');
             }
 
-            // Отображение деталей
             const feedback = data.feedback;
-            const detailsHtml = `
-                <div class="feedback-item">
-                    <strong>Последовательные символы:</strong> ${feedback.hasSequentialChars ? '❌ Обнаружены' : '✅ Не обнаружены'}
-                </div>
-                <div class="feedback-item">
-                    <strong>Повторяющиеся символы:</strong> ${feedback.hasRepeatedChars ? '❌ Обнаружены' : '✅ Не обнаружены'}
-                </div>
-                <div class="feedback-item">
-                    <strong>Общие паттерны:</strong> ${feedback.matchesCommonPattern ? '❌ Обнаружены' : '✅ Не обнаружены'}
-                </div>
-                <div class="feedback-item">
-                    <strong>Баллы за длину:</strong> ${feedback.lengthScore} / 30
-                </div>
-                <div class="feedback-item">
-                    <strong>Баллы за разнообразие:</strong> ${feedback.diversityScore} / 30
-                </div>
+            document.getElementById('feedbackDetails').innerHTML = `
+                <div class="feedback-item"><strong>${t('sequential')}</strong> ${feedback.hasSequentialChars ? '❌ ' + t('found') : '✅ ' + t('notFound')}</div>
+                <div class="feedback-item"><strong>${t('repeated')}</strong> ${feedback.hasRepeatedChars ? '❌ ' + t('found') : '✅ ' + t('notFound')}</div>
+                <div class="feedback-item"><strong>${t('commonPatterns')}</strong> ${feedback.matchesCommonPattern ? '❌ ' + t('found') : '✅ ' + t('notFound')}</div>
+                <div class="feedback-item"><strong>${t('lengthScore')}</strong> ${feedback.lengthScore} / 30</div>
+                <div class="feedback-item"><strong>${t('diversityScore')}</strong> ${feedback.diversityScore} / 30</div>
             `;
-            document.getElementById('feedbackDetails').innerHTML = detailsHtml;
 
-            // Отображение рекомендаций
-            const recommendationsHtml = feedback.recommendations
-                .map(rec => `<div class="feedback-item">💡 ${rec}</div>`)
+            document.getElementById('recommendations').innerHTML = feedback.recommendations
+                .map(rec => `<div class="feedback-item"><i class="fas fa-lightbulb"></i> ${rec}</div>`)
                 .join('');
-            document.getElementById('recommendations').innerHTML = recommendationsHtml;
 
             document.getElementById('validationResult').classList.remove('hidden');
+        }
+
+        async function comparePasswords() {
+            const password1 = document.getElementById('password1').value;
+            const password2 = document.getElementById('password2').value;
+
+            if (!password1 || !password2) {
+                alert('Введите оба пароля');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/password/compare', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ password1, password2, lang: currentLang })
+                });
+
+                const data = await response.json();
+                displayCompareResult(data);
+            } catch (error) {
+                alert('Ошибка: ' + error.message);
+            }
+        }
+
+        function displayCompareResult(data) {
+            document.getElementById('score1').textContent = data.password1Result.score;
+            document.getElementById('score2').textContent = data.password2Result.score;
+
+            const bar1 = document.getElementById('bar1');
+            const bar2 = document.getElementById('bar2');
+
+            bar1.style.width = data.password1Result.score + '%';
+            bar1.textContent = data.password1Result.strength;
+            bar2.style.width = data.password2Result.score + '%';
+            bar2.textContent = data.password2Result.strength;
+
+            [bar1, bar2].forEach((bar, idx) => {
+                const score = idx === 0 ? data.password1Result.score : data.password2Result.score;
+                bar.className = 'strength-bar';
+                if (score <= 25) bar.classList.add('strength-very-weak');
+                else if (score <= 50) bar.classList.add('strength-weak');
+                else if (score <= 75) bar.classList.add('strength-medium');
+                else if (score <= 90) bar.classList.add('strength-strong');
+                else bar.classList.add('strength-very-strong');
+            });
+
+            document.getElementById('winner1').classList.toggle('hidden', data.winner !== 'password1');
+            document.getElementById('winner2').classList.toggle('hidden', data.winner !== 'password2');
+            document.getElementById('compareRecommendation').textContent = data.recommendation;
+
+            document.getElementById('compareResult').classList.remove('hidden');
+        }
+
+        async function loadStatistics() {
+            try {
+                const response = await fetch('/api/password/statistics');
+                const data = await response.json();
+
+                document.getElementById('statGenerated').textContent = data.generatedCount;
+                document.getElementById('statValidated').textContent = data.validatedCount;
+                document.getElementById('statAvgScore').textContent = data.averageScore.toFixed(1);
+            } catch (error) {
+                console.error('Ошибка загрузки статистики:', error);
+            }
         }
 
         function copyPassword() {
             const password = document.getElementById('generatedPassword').textContent;
             navigator.clipboard.writeText(password).then(() => {
-                alert('Пароль скопирован в буфер обмена!');
+                alert('Пароль скопирован!');
             });
         }
 
-        // Инициализация темы при загрузке страницы
         initTheme();
+        updateUI();
+        document.getElementById('langText').textContent = currentLang.toUpperCase();
     </script>
 </body>
 </html>

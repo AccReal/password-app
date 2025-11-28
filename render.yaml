@@ -1,0 +1,9 @@
+services:
+  - type: web
+    name: password-generator-validator
+    env: docker
+    plan: free
+    healthCheckPath: /
+    envVars:
+      - key: JAVA_OPTS
+        value: -Xmx512m -Xms256m

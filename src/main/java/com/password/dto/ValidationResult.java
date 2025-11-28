@@ -9,15 +9,17 @@ public class ValidationResult {
     private String strength;
     private Feedback feedback;
     private String crackTime;
+    private Boolean isPwned;
 
     public ValidationResult() {
     }
 
-    public ValidationResult(Integer score, String strength, Feedback feedback, String crackTime) {
+    public ValidationResult(Integer score, String strength, Feedback feedback, String crackTime, Boolean isPwned) {
         this.score = score;
         this.strength = strength;
         this.feedback = feedback;
         this.crackTime = crackTime;
+        this.isPwned = isPwned;
     }
 
     public Integer getScore() {
@@ -50,5 +52,13 @@ public class ValidationResult {
 
     public void setCrackTime(String crackTime) {
         this.crackTime = crackTime;
+    }
+
+    public Boolean getIsPwned() {
+        return isPwned;
+    }
+
+    public void setIsPwned(Boolean isPwned) {
+        this.isPwned = isPwned;
     }
 }

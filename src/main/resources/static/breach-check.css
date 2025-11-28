@@ -1,0 +1,38 @@
+.breach-check-display {
+    text-align: center;
+    padding: 20px;
+    margin: 20px 0;
+    border-radius: 12px;
+    box-shadow: 0 5px 15px var(--shadow);
+}
+
+.breach-safe {
+    background: linear-gradient(135deg, #4caf50 0%, #8bc34a 100%);
+    color: white;
+}
+
+.breach-danger {
+    background: linear-gradient(135deg, #f44336 0%, #e91e63 100%);
+    color: white;
+}
+
+.breach-icon {
+    font-size: 48px;
+    margin-bottom: 10px;
+}
+
+.breach-message {
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.breach-note {
+    font-size: 12px;
+    opacity: 0.9;
+    font-style: italic;
+    margin-top: 10px;
+    padding: 10px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 5px;
+}

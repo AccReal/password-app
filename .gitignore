@@ -31,7 +31,8 @@ build/
 ### VS Code ###
 .vscode/
 
-### Maven ###
-.mvn/
-mvnw
-mvnw.cmd
+### Mac ###
+.DS_Store
+
+### Logs ###
+*.log

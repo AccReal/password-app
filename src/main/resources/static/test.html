@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test New Features</title>
+    <style>
+        body { font-family: Arial; padding: 20px; }
+        button { padding: 10px 20px; margin: 10px; }
+        .result { margin: 20px 0; padding: 15px; background: #f0f0f0; border-radius: 5px; }
+    </style>
+</head>
+<body>
+    <h1>Тест новых функций</h1>
+    
+    <h2>1. Batch генерация</h2>
+    <button onclick="testBatch()">Сгенерировать 5 паролей</button>
+    <div id="batchResult" class="result"></div>
+    
+    <h2>2. Проверка утечек</h2>
+    <input type="text" id="testPassword" placeholder="Введите пароль" value="password123">
+    <button onclick="testBreach()">Проверить</button>
+    <div id="breachResult" class="result"></div>
+    
+    <script>
+        async function testBatch() {
+            const response = await fetch('/api/password/generate/batch', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    count: 5,
+                    length: 16,
+                    includeLowercase: true,
+                    includeUppercase: true,
+                    includeDigits: true,
+                    includeSpecial: true
+                })
+            });
+            const data = await response.json();
+            document.getElementById('batchResult').innerHTML = 
+                '<h3>Сгенерировано ' + data.count + ' паролей:</h3>' +
+                data.passwords.map((p, i) => (i+1) + '. ' + p).join('<br>');
+        }
+        
+        async function testBreach() {
+            const password = document.getElementById('testPassword').value;
+            const response = await fetch('/api/password/validate', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ password })
+            });
+            const data = await response.json();
+            const breachStatus = data.isPwned ? 
+                '⚠️ НАЙДЕН В УТЕЧКАХ!' : 
+                '✅ Не найден в утечках';
+            document.getElementById('breachResult').innerHTML = 
+                '<h3>Результат проверки:</h3>' +
+                '<p><strong>Пароль:</strong> ' + password + '</p>' +
+                '<p><strong>Оценка:</strong> ' + data.score + '/100</p>' +
+                '<p><strong>Надежность:</strong> ' + data.strength + '</p>' +
+                '<p><strong>Время взлома:</strong> ' + data.crackTime + '</p>' +
+                '<p style="font-size: 20px;"><strong>Проверка утечек:</strong> ' + breachStatus + '</p>' +
+                '<p style="font-size: 12px; color: #666;">Проверка выполнена через Have I Been Pwned API</p>';
+        }
+    </script>
+</body>
+</html>

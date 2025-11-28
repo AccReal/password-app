@@ -1,0 +1,52 @@
+<!-- Массовая генерация -->
+<div id="batch" class="tab-content">
+    <div class="card">
+        <h2 data-i18n="batch">Массовая генерация</h2>
+        <div class="form-group">
+            <label for="batchCount" data-i18n="batchCount">Количество паролей:</label>
+            <input type="number" id="batchCount" min="1" max="1000" value="10">
+        </div>
+        <div class="form-group">
+            <label for="batchLength" data-i18n="length">Длина пароля:</label>
+            <input type="number" id="batchLength" min="4" max="128" value="16">
+        </div>
+        <div class="form-group">
+            <label data-i18n="charTypes">Типы символов:</label>
+            <div class="checkbox-group">
+                <div class="checkbox-item">
+                    <input type="checkbox" id="batchLowercase" checked>
+                    <label for="batchLowercase" data-i18n="lowercase">Строчные (a-z)</label>
+                </div>
+                <div class="checkbox-item">
+                    <input type="checkbox" id="batchUppercase" checked>
+                    <label for="batchUppercase" data-i18n="uppercase">Заглавные (A-Z)</label>
+                </div>
+                <div class="checkbox-item">
+                    <input type="checkbox" id="batchDigits" checked>
+                    <label for="batchDigits" data-i18n="digits">Цифры (0-9)</label>
+                </div>
+                <div class="checkbox-item">
+                    <input type="checkbox" id="batchSpecial" checked>
+                    <label for="batchSpecial" data-i18n="special">Спецсимволы (!@#$)</label>
+                </div>
+                <div class="checkbox-item">
+                    <input type="checkbox" id="batchCyrillic">
+                    <label for="batchCyrillic" data-i18n="cyrillic">Кириллица (а-я)</label>
+                </div>
+                <div class="checkbox-item">
+                    <input type="checkbox" id="batchExcludeSimilar">
+                    <label for="batchExcludeSimilar" data-i18n="excludeSimilar">Исключить похожие</label>
+                </div>
+            </div>
+        </div>
+        <button onclick="generateBatch()" data-i18n="generateBatch">Сгенерировать пакет</button>
+        
+        <div id="batchResult" class="result hidden">
+            <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+                <button class="copy-btn" onclick="downloadCSV()" data-i18n="downloadCsv">Скачать CSV</button>
+                <button class="copy-btn" onclick="copyAllPasswords()" data-i18n="copyAll">Копировать все</button>
+            </div>
+            <div id="batchPasswordsList" style="max-height: 400px; overflow-y: auto;"></div>
+        </div>
+    </div>
+</div>
